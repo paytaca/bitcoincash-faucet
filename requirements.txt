@@ -1,0 +1,11 @@
+BitCash==1.0.2
+cashaddress==1.0.6
+Django==3.2.25
+django-postgres-extra==2.0.2
+django-ratelimit==4.1.0
+django-redis==5.4.0
+django-simple-captcha==0.5.20
+django-widget-tweaks==1.5.0
+gunicorn==20.0.4
+psycopg2-binary==2.9.9
+python-decouple==3.8

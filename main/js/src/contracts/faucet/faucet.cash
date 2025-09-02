@@ -1,0 +1,24 @@
+pragma cashscript ^0.11.0;
+
+contract Faucet(int payout, bytes20 ownerPkhash, bytes passcode) {
+    function claim(bytes unlockPasscode) {
+        int constant TX_FEE = 300; // just hardcode if contract size changes
+        int remainingSats = tx.inputs[0].value - TX_FEE - payout;
+
+        require(tx.inputs.length == 1);
+        require(tx.outputs.length <= 2); // dont need to check less than 1 since 0 will be rejected by network
+
+        require(passcode == unlockPasscode);
+        require(tx.outputs[0].value == payout);
+
+        // if remaining sats is less, remove output
+        if (remainingSats > 546) {
+            require(tx.outputs[1].value == remainingSats);
+        }
+    }
+
+    function ownerUnlock(sig s, pubkey pk) {
+        require(hash160(pk) == ownerPkhash);
+        require(checkSig(s, pk));
+    }
+}

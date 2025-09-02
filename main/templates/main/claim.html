@@ -1,0 +1,109 @@
+<!-- templates/faucet/index.html -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Bitcoin Cash Faucet</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  {% load widget_tweaks %}
+  {% load tz %}
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col pt-4">
+  <div class="flex-grow flex items-center justify-center">
+    <div class="bg-white shadow-xl rounded-2xl p-8 w-full max-w-md">
+      <h1 class="text-2xl font-bold text-center text-green-600 mb-6">Bitcoin Cash Faucet</h1>
+
+      {% if success %}
+        <div class="mb-4 p-3 rounded-lg bg-green-100 text-green-800 break-all">
+          {{ success }}
+        </div>
+      {% endif %}
+
+      {% if form.non_field_errors %}
+        <div class="mb-4 p-3 rounded-lg bg-red-100 text-red-700 break-all">
+          {% for error in form.non_field_errors %}
+            <p>{{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <form method="post" class="space-y-4">
+        {% csrf_token %}
+        
+        <!-- BCH address -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">{{ form.address.label }}</label>
+          {{ form.address|add_class:"w-full px-3 py-2 border rounded-lg focus:ring focus:ring-green-300" }}
+          {% for error in form.address.errors %}
+            <p class="text-red-500 text-xs mt-1">{{ error }}</p>
+          {% endfor %}
+        </div>
+
+        <!-- Passcode -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">{{ form.passcode.label }}</label>
+          {{ form.passcode|add_class:"w-full px-3 py-2 border rounded-lg focus:ring focus:ring-green-300" }}
+          {% for error in form.passcode.errors %}
+            <p class="text-red-500 text-xs mt-1">{{ error }}</p>
+          {% endfor %}
+        </div>
+
+        <!-- Radio buttons -->
+        <div>
+          <span class="block text-sm font-medium text-gray-700 mb-1">{{ form.network.label }}</span>
+          <div class="space-y-2">
+            {% for radio in form.network %}
+              <label class="flex items-center space-x-2 cursor-pointer">
+                {{ radio.tag }}
+                <span class="text-gray-700">{{ radio.choice_label }}</span>
+              </label>
+            {% endfor %}
+          </div>
+          {% for error in form.network.errors %}
+            <p class="text-red-500 text-xs mt-1">{{ error }}</p>
+          {% endfor %}
+        </div>
+
+        <!-- Captcha -->
+        <div>
+          <span class="block text-sm font-medium text-gray-700 mb-1">{{ form.captcha.label }}</span>
+          {{ form.captcha|add_class:"w-full mt-3 px-3 py-2 border rounded-lg focus:ring focus:ring-green-300" }}
+          {% for error in form.captcha.errors %}
+            <p class="text-red-500 text-xs mt-1">{{ error }}</p>
+          {% endfor %}
+        </div>
+
+        <!-- Submit -->
+        <button type="submit"
+          class="w-full py-2 px-4 bg-green-600 text-white font-semibold rounded-lg shadow hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400">
+          Claim
+        </button>
+      </form>
+
+      <hr class="my-6">
+
+      <h3 class="text-lg font-semibold text-gray-700 mb-3">Recent Claims</h3>
+      <ul class="space-y-2 text-sm">
+        {% for r in recent %}
+        <li class="flex justify-between items-center p-2 bg-gray-50 rounded">
+          <span class="truncate">{{ r.created_at|localtime }} — {{ r.recipient }}</span>
+          {% if r.txid %}
+            <a href="{{ r.tx_link }}" target="_blank" class="text-green-600 font-medium">View</a>
+          {% endif %}
+        </li>
+      {% empty %}
+        <li class="text-gray-500">No claims yet.</li>
+      {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="text-center text-gray-500 text-sm py-4">
+    Powered by 
+    <a href="https://cashscript.org" target="_blank" class="text-green-600 hover:underline">CashScript</a>
+    and
+    <a href="https://paytaca.com" target="_blank" class="text-green-600 hover:underline">Paytaca</a>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,11 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block content %}
+  <h1>Sweep {{ obj }}</h1>
+  <form method="post">{% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Submit" class="default">
+    <a href="{% url 'admin:main_faucetcontract_changelist' %}">Cancel</a>
+  </form>
+{% endblock %}

@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "@bitauth/libauth": "^3.0.0",
+    "cashc": "^0.11.5",
+    "cashscript": "^0.11.5"
+  },
+  "type": "module"
+}

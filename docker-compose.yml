@@ -1,0 +1,36 @@
+version: "3"
+services:
+  postgres:
+    image: "postgres:11.1-alpine"
+    volumes:
+      - paytaca_faucet_dbdata:/var/lib/postgresql/data
+    env_file:
+      - .env_dev
+    expose:
+      - "5432"
+  redis:
+    image: "redis:alpine"
+    env_file:
+      - .env_dev
+  backend:
+    build: .
+    command: [ "supervisord", "-c", "/code/supervisord-dev.conf", "--nodaemon" ]
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env_dev
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./:/code
+      - /code/main/js/node_modules
+  adminer:
+    image: adminer
+    depends_on: 
+      - postgres
+    ports:
+      - 3000:8080
+volumes:
+  paytaca_faucet_dbdata:
+    driver: 'local'
