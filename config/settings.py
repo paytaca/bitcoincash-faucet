@@ -42,7 +42,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'captcha', # django-simple-captcha (example)
-    'django_ratelimit',
     'widget_tweaks',
 
     'main',
@@ -145,25 +144,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-# Caches (Needed for django rate limit)
-REDIS_HOST = config("REDIS_HOST", default="redis")
-REDIS_PORT = config("REDIS_PORT", default="6379")
-REDIS_PASSWORD = config("REDIS_PASSWORD", default=None)
-REDIS_DB_NUM = 3
-
-if REDIS_PASSWORD:
-    redis_prefix = ''
-    REDIS_CACHE_URL = 'redis://%s:%s@%s:%s/%s' % (redis_prefix, REDIS_PASSWORD, REDIS_HOST, REDIS_PORT, REDIS_DB_NUM)
-else:
-    REDIS_CACHE_URL = 'redis://%s:%s/%s' % (REDIS_HOST, REDIS_PORT, REDIS_DB_NUM)
-
-CACHES = {
-    'default': {
-        "BACKEND": 'django_redis.cache.RedisCache',
-        "LOCATION": REDIS_CACHE_URL,
-    }
-}
-
 #Logging
 LOGGING = {
     'version': 1,
@@ -197,13 +177,6 @@ LOGGING = {
         },
     }
 }
-
-# Django Rate Limit
-RATELIMIT_CACHE_PREFIX = "rl:"
-
-
-# Faucet wallets
-FAUCET_WALLET_WIF = config("FAUCET_WALLET_WIF")
 
 # Watchtower
 WATCHTOWER_PROJECT_ID = config("WATCHTOWER_PROJECT_ID")
