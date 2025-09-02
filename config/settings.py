@@ -28,7 +28,10 @@ SECRET_KEY = config('SECRET_KEY') # used for authtoken
 DEBUG = config('ENV', 'prod') != 'prod'
 ENV = config('ENV', 'prod')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "37.27.198.160",
+    "faucet.paytaca.com",
+]
 
 
 # Application definition

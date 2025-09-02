@@ -1,0 +1,25 @@
+name: bitcoincash-faucet
+services:
+  postgres:
+    image: "postgres:11.1-alpine"
+    volumes:
+      - paytaca_faucet_dbdata:/var/lib/postgresql/data
+    env_file:
+      - .env_prod
+    expose:
+      - "5432"
+  backend:
+    build: ../
+    command: [ "supervisord", "-c", "/code/supervisord.conf", "--nodaemon" ]
+    ports:
+      - "8001:8000"
+    env_file:
+      - .env_prod
+    depends_on:
+      - postgres
+    volumes:
+      - /code/main/js/node_modules
+      - /var/www/faucet/static:/code/static
+volumes:
+  paytaca_faucet_dbdata:
+    driver: 'local'
