@@ -31,6 +31,8 @@ ENV = config('ENV', 'prod')
 ALLOWED_HOSTS = [
     "37.27.198.160",
     "faucet.paytaca.com",
+    "watchtower.cash",
+    "chipnet.watchtower.cash",
 ]
 
 if DEBUG:

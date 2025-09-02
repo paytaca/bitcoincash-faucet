@@ -64,6 +64,12 @@ class FaucetClaimView(View):
         faucet.claim_count += 1
         faucet.save()
 
+        try:
+            LOGGER.info(f"UPDATING BALANCE | {faucet}")
+            update_faucet_balance(faucet)
+        except Exception as exception:
+            LOGGER.exception(exception)
+
         ctx["form"] = FaucetForm()
         ctx["success"] = f"Sent {faucet_request.satoshis / 10e8:.8f} BCH to {faucet_request.recipient}"
 
@@ -74,8 +80,9 @@ class WatchtowerWebhookView(View):
     def post(self, request, *args, **kwargs):
         try:
             json_data = json.loads(request.body)
-        except json.JSONDecodeError:
-            return JsonResponse(data=dict(detail="Invalid payload"), status=400)
+        except json.JSONDecodeError as exception:
+            LOGGER.debug(f"Invalid JSON from webhook, attempting POST data instead | {request.body}")
+            json_data = request.POST.dict()
 
         LOGGER.info(f"RECEIVED WEBHOOK | {json.dumps(json_data, indent=2)}")
 
