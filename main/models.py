@@ -17,6 +17,7 @@ class FaucetContract(models.Model):
     max_claim_count = models.PositiveIntegerField(null=True, blank=True)
 
     subscribed = models.BooleanField(default=False, help_text="If subscribed to watchtower")
+    balance_satoshis = models.PositiveIntegerField(null=True, blank=True)
 
     def __str__(self):
         return f"Faucet#{self.id} <{self.address}>"

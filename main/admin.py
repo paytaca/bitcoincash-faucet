@@ -27,14 +27,17 @@ class FaucetContractAdmin(admin.ModelAdmin):
 
         "claim_count",
         "max_claim_count",
+        "balance_satoshis",
     ]
 
     list_filter = [
         "network",
+        "subscribed",
     ]
 
     actions = [
         "subscribe_to_watchtower",
+        "update_balance",
     ]
     change_form_template = "admin/faucet_contract/change_form.html"
 
@@ -85,6 +88,17 @@ class FaucetContractAdmin(admin.ModelAdmin):
                     raise Exception(error)
             except Exception as exception:
                 messages.error(request, f"Subscribe {obj} error -> {exception}")
+
+    def update_balance(self, request, queryset):
+        for obj in queryset:
+            try:
+                wt_api = Watchtower(network=obj.network)
+                balance_data = wt_api.get_balance(obj.address)
+                balance_bch = balance_data["balance"]
+                obj.balance_satoshis = round(balance_bch * 10e8)
+                obj.save()
+            except Exception as exception:
+                messages.error(request, f"{obj} => {exception}")
 
 
 @admin.register(FaucetClaim)

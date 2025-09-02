@@ -24,6 +24,7 @@ class Migration(migrations.Migration):
                 ('claim_count', models.PositiveIntegerField(default=0)),
                 ('max_claim_count', models.PositiveIntegerField(blank=True, null=True)),
                 ('subscribed', models.BooleanField(default=False, help_text='If subscribed to watchtower')),
+                ('balance_satoshis', models.PositiveIntegerField(blank=True, null=True)),
             ],
         ),
         migrations.CreateModel(

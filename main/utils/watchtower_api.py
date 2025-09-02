@@ -97,6 +97,13 @@ class Watchtower:
 
         return response_data
 
+    def get_balance(self, address):
+        response = self._request("get", f"balance/bch/{address}/")
+        if not response.ok:
+            raise WatchtowerException(response.content)
+        response_data = response.json()
+        return response_data
+
     def get_bch_utxos(self, address, confirmed=None, parse=None):
         params = {}
         if isinstance(confirmed, bool):

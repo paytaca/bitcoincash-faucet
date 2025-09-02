@@ -48,7 +48,7 @@ class FaucetClaimView(View):
         success, error_or_txid = faucet_claim(faucet, address, passcode, broadcast=True)
 
         if not success:
-            form.add_error(None, f"Broadcast error: {error_or_txid}")
+            form.add_error(None, f"Claim failed: {error_or_txid}")
             return render(request, "main/claim.html", ctx)
 
         faucet_request = FaucetClaim.objects.create(
