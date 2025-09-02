@@ -1,10 +1,13 @@
+import json
 from django.utils import timezone
 from django.shortcuts import render
 from django.views import View
+from django.http import JsonResponse
 
-from main.models import FaucetClaim
+from main.apps import LOGGER
+from main.models import FaucetClaim, FaucetContract
 from main.forms import FaucetForm
-from main.utils.faucet_contract import faucet_claim
+from main.utils.faucet_contract import faucet_claim, update_faucet_balance
 
 # Create your views here.
 def get_client_ip(request):
@@ -65,3 +68,23 @@ class FaucetClaimView(View):
         ctx["success"] = f"Sent {faucet_request.satoshis / 10e8:.8f} BCH to {faucet_request.recipient}"
 
         return render(request, "main/claim.html", ctx)
+
+
+class WatchtowerWebhookView(View):
+    def post(self, request, *args, **kwargs):
+        try:
+            json_data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse(data=dict(detail="Invalid payload"), status=400)
+
+        LOGGER.info(f"RECEIVED WEBHOOK | {json.dumps(json_data, indent=2)}")
+
+        address = json_data.get("address")
+        if address:
+            LOGGER.info(f"GOT ADDRESS FROM WEBHOOK | {address}")
+            faucet = FaucetContract.objects.filter(address=address).first()
+            if faucet:
+                LOGGER.info(f"UPDATING BALANCE | {faucet}")
+                update_faucet_balance(faucet)
+
+        return JsonResponse(dict(acknowledged=True))

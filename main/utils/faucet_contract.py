@@ -1,3 +1,5 @@
+from django.conf import settings
+
 from main.apps import LOGGER
 from main.js.runner import ScriptFunctions
 from main.models import FaucetContract
@@ -75,3 +77,20 @@ def sweep_faucet(obj:FaucetContract, wif:str, recipient:str=None):
         return False, f"{exception}"
 
     return True, txid
+
+def update_faucet_balance(obj:FaucetContract):
+    wt_api = Watchtower(network=obj.network)
+    balance_data = wt_api.get_balance(obj.address)
+    balance_bch = balance_data["balance"]
+    obj.balance_satoshis = round(balance_bch * 10 ** 8)
+    obj.save()
+    return obj.balance_satoshis
+
+
+def subscribe_faucet_contract(obj:FaucetContract):
+    wt_api = Watchtower(network=obj.network)
+    LOGGER.info(f"Subscribing faucet contract | {obj} | {settings.WATCHTOWER_WEBHOOK_RECEIVER_URL}")
+    success, error = wt_api.subscribe_address(
+        obj.address, webhook_url=settings.WATCHTOWER_WEBHOOK_RECEIVER_URL,
+    )
+    return success, error

@@ -15,11 +15,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.views.decorators.csrf import csrf_exempt
 
 from main import views as main_views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path("", main_views.FaucetClaimView.as_view()),
     path("claim/", main_views.FaucetClaimView.as_view()),
+    path('admin/', admin.site.urls),
     path('captcha/', include('captcha.urls')),
+    path('api/watchtower/webhook/', csrf_exempt(main_views.WatchtowerWebhookView.as_view())),
 ]

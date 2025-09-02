@@ -159,11 +159,13 @@ class Watchtower:
 
         return response_data
 
-    def subscribe_address(self, address):
+    def subscribe_address(self, address, webhook_url:str=None):
         project_id = settings.WATCHTOWER_PROJECT_ID
         if self._network == "chipnet":
             project_id = settings.WATCHTOWER_CHIPNET_PROJECT_ID
         data = dict(address=address, project_id=project_id)
+        if webhook_url:
+            data["webhook_url"] = webhook_url
 
         response = self._request("post", "subscription/", data=data)
         success = response.ok and response.json().get("success")

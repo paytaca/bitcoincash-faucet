@@ -7,8 +7,7 @@ from django.shortcuts import render, get_object_or_404
 from main.models import FaucetContract, FaucetClaim
 from main.forms import FaucetContractForm, SweepFaucetContractForm
 
-from main.utils.faucet_contract import sweep_faucet
-from main.utils.watchtower_api import Watchtower
+from main.utils.faucet_contract import sweep_faucet, update_faucet_balance, subscribe_faucet_contract
 
 # Register your models here.
 @admin.register(FaucetContract)
@@ -78,8 +77,7 @@ class FaucetContractAdmin(admin.ModelAdmin):
     def subscribe_to_watchtower(self, request, queryset):
         for obj in queryset:
             try:
-                wt_api = Watchtower(network=obj.network)
-                success, error = wt_api.subscribe_address(obj.address)
+                success, error = subscribe_faucet_contract(obj)
                 if success:
                     obj.subscribed = True
                     obj.save()
@@ -92,11 +90,7 @@ class FaucetContractAdmin(admin.ModelAdmin):
     def update_balance(self, request, queryset):
         for obj in queryset:
             try:
-                wt_api = Watchtower(network=obj.network)
-                balance_data = wt_api.get_balance(obj.address)
-                balance_bch = balance_data["balance"]
-                obj.balance_satoshis = round(balance_bch * 10e8)
-                obj.save()
+                update_faucet_balance(obj)
             except Exception as exception:
                 messages.error(request, f"{obj} => {exception}")
 
