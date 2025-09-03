@@ -195,3 +195,23 @@ WATCHTOWER_BASE_URLS = {
     "chipnet": "https://chipnet.watchtower.cash/api/"
 }
 
+
+# Cashaddress hack
+from cashaddress.convert import Address
+
+Address.VERSION_MAP["legacy"] += [
+    ('P2SH32', 5, False),
+    ('P2SH32-TESTNET', 196, True),
+]
+
+Address.VERSION_MAP["cash"] += [
+    ('P2SH32', 11, False),
+    ('P2SH32-TESTNET', 11, True),
+
+    # ('CT-P2SH', 24, False),
+    # ('CT-P2SH32', 27, False),
+    # ('CT-P2PKH', 16, False),
+    # ('CT-P2SH-TESTNET', 24, True),
+    # ('CT-P2SH32-TESTNET', 27, True),
+    # ('CT-P2PKH-TESTNET', 16, True),
+]
