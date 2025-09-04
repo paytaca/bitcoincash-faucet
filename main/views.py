@@ -42,12 +42,13 @@ class FaucetClaimView(View):
         passcode = form.cleaned_data['passcode']
         faucet = form.cleaned_data['faucet']
 
-        one_day_ago = timezone.now() - timezone.timedelta(days=1)
-        recent_claims = faucet.claims.filter(ip=ip, created_at__gte=one_day_ago)
-        recent_claims_count = recent_claims.count()
-        if recent_claims_count > 5:
-            form.add_error(None, "Already claimed 5 times in the last 24 hours, come back again later")
-            return render(request, "main/claim.html", ctx)
+        if faucet.max_claim_per_ip:
+            one_day_ago = timezone.now() - timezone.timedelta(days=1)
+            recent_claims = faucet.claims.filter(ip=ip, created_at__gte=one_day_ago)
+            recent_claims_count = recent_claims.count()
+            if recent_claims_count > faucet.max_claim_per_ip:
+                form.add_error(None, f"Already claimed {max_claim_per_ip} times in the last 24 hours, come back again later")
+                return render(request, "main/claim.html", ctx)
 
         success, error_or_txid = faucet_claim(faucet, address, passcode, broadcast=True)
 

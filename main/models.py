@@ -16,6 +16,11 @@ class FaucetContract(models.Model):
     claim_count = models.PositiveIntegerField(default=0)
     max_claim_count = models.PositiveIntegerField(null=True, blank=True)
 
+    max_claim_per_ip = models.PositiveIntegerField(
+        null=True, blank=True,
+        help_text="Max claim per unique IP for 24 hours, leave blank to disable",
+    )
+
     subscribed = models.BooleanField(default=False, help_text="If subscribed to watchtower")
     balance_satoshis = models.PositiveIntegerField(null=True, blank=True)
 
