@@ -14,6 +14,7 @@ contract Faucet(int payout, bytes20 ownerPkhash, bytes passcode) {
         // if remaining sats is less, remove output
         if (remainingSats > 546) {
             require(tx.outputs[1].value == remainingSats);
+            require(tx.outputs[1].lockingBytecode == tx.inputs[this.activeInputIndex].lockingBytecode);
         }
     }
 
